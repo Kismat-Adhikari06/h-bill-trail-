@@ -10,7 +10,9 @@ function ProtectedRoute({ children, role }) {
   const { user } = useAuth();
 
   if (!user) return <Navigate to="/login" />;
-  if (role && user.role !== role) return <Navigate to="/" />;
+  if (role && user.role !== role) {
+    return <Navigate to={user.role === "admin" ? "/" : "/dashboard"} />;
+  }
 
   return children;
 }
@@ -20,10 +22,7 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route
-        path="/login"
-        element={user ? <Navigate to={user.role === "admin" ? "/" : "/user"} /> : <LoginPage />}
-      />
+      <Route path="/login" element={<LoginPage />} />
       <Route
         path="/"
         element={
@@ -40,19 +39,16 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route path="/bill/:id" element={<BillPage />} />
       <Route
-        path="/bill/:id"
-        element={<BillPage />}
-      />
-      <Route
-        path="/user"
+        path="/dashboard"
         element={
           <ProtectedRoute role="user">
             <UserPage />
           </ProtectedRoute>
         }
       />
-      <Route path="*" element={<Navigate to="/login" />} />
+      <Route path="*" element={<Navigate to={user ? (user.role === "admin" ? "/" : "/dashboard") : "/login"} />} />
     </Routes>
   );
 }

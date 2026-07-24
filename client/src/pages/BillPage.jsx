@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { fetchBillById } from "../api/bills";
+import { useAuth } from "../context/AuthContext";
 
 function BillPage() {
   const { id } = useParams();
   const [bill, setBill] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchBillById(id)
@@ -14,6 +17,15 @@ function BillPage() {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, [id]);
+
+  async function handleSave() {
+    if (!user) {
+      navigate(`/login?save=${id}`);
+      return;
+    }
+
+    navigate(`/dashboard?save=${id}`);
+  }
 
   if (loading) return <p style={center}>Loading bill...</p>;
   if (error) return <p style={{ ...center, color: "red" }}>Error: {error}</p>;
@@ -27,7 +39,6 @@ function BillPage() {
 
   return (
     <div style={containerStyle}>
-      {/* Header */}
       <div style={headerStyle}>
         <h1 style={{ margin: 0, fontSize: "22px" }}>{bill.restaurant_name}</h1>
         <p style={{ margin: "4px 0 0", color: "#666", fontSize: "14px" }}>
@@ -38,7 +49,6 @@ function BillPage() {
         </p>
       </div>
 
-      {/* Items table */}
       <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "20px" }}>
         <thead>
           <tr>
@@ -60,7 +70,6 @@ function BillPage() {
         </tbody>
       </table>
 
-      {/* Summary */}
       <div style={summaryStyle}>
         <div style={rowStyle}>
           <span>Subtotal</span>
@@ -74,6 +83,12 @@ function BillPage() {
           <span>Total</span>
           <span>Rs {bill.total_amount}</span>
         </div>
+      </div>
+
+      <div style={{ marginTop: "24px", textAlign: "center" }}>
+        <button onClick={handleSave} style={saveBtn}>
+          Save Bill
+        </button>
       </div>
     </div>
   );
@@ -130,6 +145,17 @@ const totalRowStyle = {
   paddingTop: "10px",
   fontWeight: "bold",
   fontSize: "18px",
+};
+
+const saveBtn = {
+  padding: "12px 32px",
+  background: "#333",
+  color: "#fff",
+  border: "none",
+  borderRadius: "8px",
+  fontSize: "16px",
+  fontWeight: "600",
+  cursor: "pointer",
 };
 
 export default BillPage;

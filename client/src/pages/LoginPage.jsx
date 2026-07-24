@@ -1,15 +1,19 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { login } from "../api/auth";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { login, signup } from "../api/auth";
 import { useAuth } from "../context/AuthContext";
 
 function LoginPage() {
+  const [isSignup, setIsSignup] = useState(false);
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const { loginUser } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const saveBillId = searchParams.get("save");
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -17,13 +21,21 @@ function LoginPage() {
     setLoading(true);
 
     try {
-      const user = await login(email, password);
-      loginUser(user);
-
-      if (user.role === "admin") {
-        navigate("/");
+      let userData;
+      if (isSignup) {
+        userData = await signup(name, email, password);
       } else {
-        navigate("/user");
+        userData = await login(email, password);
+      }
+
+      loginUser(userData);
+
+      if (userData.role === "admin") {
+        navigate("/");
+      } else if (saveBillId) {
+        navigate(`/dashboard?save=${saveBillId}`);
+      } else {
+        navigate("/dashboard");
       }
     } catch (err) {
       setError(err.message);
@@ -37,12 +49,26 @@ function LoginPage() {
       <div style={card}>
         <h1 style={{ textAlign: "center", marginBottom: "8px" }}>H-Bill</h1>
         <p style={{ textAlign: "center", color: "#888", marginBottom: "24px" }}>
-          Sign in to your account
+          {isSignup ? "Create your account" : "Sign in to your account"}
         </p>
 
         {error && <p style={errorStyle}>{error}</p>}
 
         <form onSubmit={handleSubmit}>
+          {isSignup && (
+            <div style={field}>
+              <label style={label}>Name</label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter your name"
+                style={input}
+                required
+              />
+            </div>
+          )}
+
           <div style={field}>
             <label style={label}>Email</label>
             <input
@@ -68,9 +94,19 @@ function LoginPage() {
           </div>
 
           <button type="submit" style={button} disabled={loading}>
-            {loading ? "Signing in..." : "Sign In"}
+            {loading ? "Please wait..." : isSignup ? "Create Account" : "Sign In"}
           </button>
         </form>
+
+        <p style={{ textAlign: "center", marginTop: "16px", fontSize: "14px", color: "#666" }}>
+          {isSignup ? "Already have an account?" : "Don't have an account?"}{" "}
+          <button
+            onClick={() => { setIsSignup(!isSignup); setError(null); }}
+            style={toggleBtn}
+          >
+            {isSignup ? "Sign In" : "Sign Up"}
+          </button>
+        </p>
       </div>
     </div>
   );
@@ -124,6 +160,16 @@ const button = {
   fontWeight: "600",
   cursor: "pointer",
   marginTop: "8px",
+};
+
+const toggleBtn = {
+  background: "none",
+  border: "none",
+  color: "#333",
+  fontWeight: "600",
+  cursor: "pointer",
+  fontSize: "14px",
+  textDecoration: "underline",
 };
 
 const errorStyle = {
