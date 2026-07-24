@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { fetchBills } from "../api/bills";
+import { useAuth } from "../context/AuthContext";
 
 function DashboardPage() {
   const [bills, setBills] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchBills()
@@ -14,12 +17,25 @@ function DashboardPage() {
       .finally(() => setLoading(false));
   }, []);
 
+  function handleLogout() {
+    logout();
+    navigate("/login");
+  }
+
   if (loading) return <p>Loading bills...</p>;
   if (error) return <p style={{ color: "red" }}>Error: {error}</p>;
 
   return (
     <div>
-      <h1>Dashboard</h1>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+        <div>
+          <h1 style={{ margin: 0 }}>Dashboard</h1>
+          <p style={{ margin: "4px 0 0", color: "#888", fontSize: "14px" }}>
+            Welcome, {user?.name}
+          </p>
+        </div>
+        <button onClick={handleLogout} style={logoutBtn}>Logout</button>
+      </div>
 
       {bills.length === 0 ? (
         <p>No bills found.</p>
@@ -38,7 +54,7 @@ function DashboardPage() {
           <tbody>
             {bills.map((bill) => (
               <tr key={bill.id}>
-                <td style={tdStyle}>{bill.id}</td>
+                <td style={tdStyle}>{bill.id.slice(-6)}</td>
                 <td style={tdStyle}>{bill.table_number}</td>
                 <td style={tdStyle}>{bill.customer_name}</td>
                 <td style={tdStyle}>
@@ -75,6 +91,16 @@ const linkStyle = {
   color: "#0066cc",
   textDecoration: "none",
   fontWeight: "bold",
+};
+
+const logoutBtn = {
+  padding: "8px 16px",
+  background: "#fff",
+  color: "#333",
+  border: "1px solid #ddd",
+  borderRadius: "6px",
+  fontSize: "14px",
+  cursor: "pointer",
 };
 
 function statusStyle(status) {
