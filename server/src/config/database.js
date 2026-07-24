@@ -8,6 +8,7 @@ const pool = new Pool({
   user: env.DB_USER,
   password: env.DB_PASSWORD,
   max: 20,
+  ssl: env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
 });
 
 pool.on("error", (err) => {
