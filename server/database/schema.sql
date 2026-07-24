@@ -1,13 +1,9 @@
--- ============================================
--- H-Bill QR System — Database Schema
--- ============================================
+--h- bill demo database schema 
 
 DROP TABLE IF EXISTS bill_items;
 DROP TABLE IF EXISTS bills;
 
--- ============================================
--- BILLS TABLE
--- ============================================
+--bill table
 CREATE TABLE bills (
     id              SERIAL PRIMARY KEY,
     table_number    VARCHAR(10) NOT NULL,
@@ -22,9 +18,8 @@ CREATE TABLE bills (
     updated_at      TIMESTAMP DEFAULT NOW()
 );
 
--- ============================================
--- BILL ITEMS TABLE
--- ============================================
+
+-- bill item tables
 CREATE TABLE bill_items (
     id              SERIAL PRIMARY KEY,
     bill_id         INTEGER NOT NULL REFERENCES bills(id) ON DELETE CASCADE,
