@@ -5,6 +5,7 @@ const billRoutes = require("./bill.routes");
 const qrRoutes = require("./qr.routes");
 const userRoutes = require("./user.routes");
 const authRoutes = require("./auth.routes");
+const savedBillRoutes = require("./savedBill.routes");
 
 const router = express.Router();
 
@@ -30,5 +31,6 @@ router.use("/bills", billRoutes);
 router.use("/qr", qrRoutes);
 router.use("/users", userRoutes);
 router.use("/auth", authRoutes);
+router.use("/saved-bills", savedBillRoutes);
 
 module.exports = router;
