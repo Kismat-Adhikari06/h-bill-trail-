@@ -1,6 +1,6 @@
 const QRCode = require("qrcode");
 
-const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
+const FRONTEND_URL = process.env.FRONTEND_URL || "https://h-bill-trail-eight.vercel.app";
 
 async function generateQR(billId) {
   const url = `${FRONTEND_URL}/bill/${billId}`;
