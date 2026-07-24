@@ -5,9 +5,9 @@ const ApiError = require("../utils/ApiError");
 
 async function getBillQR(req, res, next) {
   try {
-    const id = parseInt(req.params.id, 10);
+    const { id } = req.params;
 
-    if (isNaN(id)) {
+    if (!id) {
       throw new ApiError(400, "Invalid bill ID");
     }
 
@@ -19,12 +19,16 @@ async function getBillQR(req, res, next) {
 
     const qr = await qrService.generateQR(id);
 
-    sendSuccess(res, {
-      billId: bill.id,
-      tableNumber: bill.table_number,
-      qrUrl: qr.url,
-      qrImage: qr.dataUrl,
-    }, "QR code generated successfully");
+    sendSuccess(
+      res,
+      {
+        billId: bill.id,
+        tableNumber: bill.table_number,
+        qrUrl: qr.url,
+        qrImage: qr.dataUrl,
+      },
+      "QR code generated successfully"
+    );
   } catch (err) {
     next(err);
   }

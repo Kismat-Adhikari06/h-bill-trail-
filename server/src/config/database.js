@@ -1,29 +1,42 @@
-const { Pool } = require("pg");
+const { MongoClient } = require("mongodb");
 const env = require("./env");
 
-const pool = new Pool({
-  host: env.DB_HOST,
-  port: env.DB_PORT,
-  database: env.DB_NAME,
-  user: env.DB_USER,
-  password: env.DB_PASSWORD,
-  max: 20,
-  ssl: env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
-});
+let client;
+let db;
 
-pool.on("error", (err) => {
-  console.error("Unexpected database pool error:", err);
-  process.exit(1);
-});
+async function connect() {
+  if (db) return db;
+
+  client = new MongoClient(env.MONGODB_URI);
+  await client.connect();
+  db = client.db(env.MONGODB_DB);
+
+  console.log(`MongoDB connected to database: ${env.MONGODB_DB}`);
+  return db;
+}
+
+function getDb() {
+  if (!db) throw new Error("Database not connected. Call connect() first.");
+  return db;
+}
 
 async function testConnection() {
   try {
-    const result = await pool.query("SELECT NOW()");
-    console.log("Database connected at:", result.rows[0].now);
+    const database = await connect();
+    await database.command({ ping: 1 });
+    console.log("Database ping successful");
   } catch (err) {
     console.error("Database connection failed:", err.message);
     process.exit(1);
   }
 }
 
-module.exports = { pool, testConnection };
+async function close() {
+  if (client) {
+    await client.close();
+    db = null;
+    client = null;
+  }
+}
+
+module.exports = { connect, getDb, testConnection, close };

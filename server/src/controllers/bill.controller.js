@@ -13,9 +13,9 @@ async function getAllBills(req, res, next) {
 
 async function getBillById(req, res, next) {
   try {
-    const id = parseInt(req.params.id, 10);
+    const { id } = req.params;
 
-    if (isNaN(id)) {
+    if (!id) {
       throw new ApiError(400, "Invalid bill ID");
     }
 
