@@ -1,7 +1,11 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useState } from "react";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import Sidebar from "./components/Sidebar";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
+import CreateBillPage from "./pages/CreateBillPage";
+import EditBillPage from "./pages/EditBillPage";
 import QRPage from "./pages/QRPage";
 import BillPage from "./pages/BillPage";
 import UserPage from "./pages/UserPage";
@@ -17,7 +21,7 @@ function ProtectedRoute({ children, role }) {
   return children;
 }
 
-function AppRoutes() {
+function AppRoutes({ onMenuClick }) {
   const { user } = useAuth();
 
   return (
@@ -27,7 +31,23 @@ function AppRoutes() {
         path="/"
         element={
           <ProtectedRoute role="admin">
-            <DashboardPage />
+            <DashboardPage onMenuClick={onMenuClick} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/bill/new"
+        element={
+          <ProtectedRoute role="admin">
+            <CreateBillPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/bill/:id/edit"
+        element={
+          <ProtectedRoute role="admin">
+            <EditBillPage />
           </ProtectedRoute>
         }
       />
@@ -54,11 +74,28 @@ function AppRoutes() {
 }
 
 function App() {
+  const { user } = useAuth();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const showSidebar = user && user.role;
+
   return (
     <BrowserRouter>
       <AuthProvider>
-        <div style={{ maxWidth: "900px", margin: "0 auto", padding: "20px" }}>
-          <AppRoutes />
+        <div className="app-layout">
+          {showSidebar && (
+            <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+          )}
+          <div className="app-main">
+            {showSidebar && (
+              <button className="hamburger" onClick={() => setSidebarOpen(true)}>
+                &#9776;
+              </button>
+            )}
+            <div className="app-container">
+              <AppRoutes onMenuClick={() => setSidebarOpen(true)} />
+            </div>
+          </div>
         </div>
       </AuthProvider>
     </BrowserRouter>
