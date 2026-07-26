@@ -7,16 +7,7 @@ let db;
 async function connect() {
   if (db) return db;
 
-  const uri = env.MONGODB_URI || "";
-  const masked = uri.replace(/:([^@]+)@/, ":****@");
-  console.log("MONGODB_URI set:", !!env.MONGODB_URI, "| starts with:", masked.substring(0, 40));
-
-  client = new MongoClient(env.MONGODB_URI, {
-    tls: true,
-    tlsMinVersion: "TLSv1.2",
-    retryWrites: true,
-    w: "majority",
-  });
+  client = new MongoClient(env.MONGODB_URI);
   await client.connect();
   db = client.db(env.MONGODB_DB);
 
