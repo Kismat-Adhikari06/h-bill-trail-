@@ -42,6 +42,10 @@ a:hover {
   margin-left: 66px;
 }
 
+.app-main-no-sidebar {
+  margin-left: 0;
+}
+
 /* Sidebar */
 .sidebar {
   width: 220px;

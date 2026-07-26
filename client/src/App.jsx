@@ -101,7 +101,7 @@ function Layout() {
           onToggleCollapse={handleToggleCollapse}
         />
       )}
-      <div className={`app-main ${showSidebar && collapsed ? "app-main-collapsed" : ""}`}>
+      <div className={`app-main ${showSidebar && collapsed ? "app-main-collapsed" : ""} ${!showSidebar ? "app-main-no-sidebar" : ""}`}>
         {showSidebar && (
           <button className="hamburger" onClick={() => setMobileOpen(true)}>
             &#9776;

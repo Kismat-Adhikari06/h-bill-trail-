@@ -90,10 +90,6 @@ async function updateBill(req, res, next) {
       throw new ApiError(404, "Bill not found");
     }
 
-    if (result.locked) {
-      throw new ApiError(403, `Cannot edit bill — status is "${result.locked ? result.status : ""}". Only open bills can be edited.`);
-    }
-
     sendSuccess(res, result, "Bill updated successfully");
   } catch (err) {
     next(err);

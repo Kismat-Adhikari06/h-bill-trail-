@@ -153,10 +153,10 @@ function DashboardPage() {
                       <td style={td}><span style={dateText}>{new Date(bill.created_at).toLocaleString()}</span></td>
                       <td style={td}>
                         <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
-                          {bill.status === "open" && (
-                            <Link to={`/bill/${bill.id}/edit`} style={editBtn}>Edit</Link>
+                          <Link to={`/bill/${bill.id}/edit`} style={editBtn}>Edit</Link>
+                          {bill.status === "closed" && (
+                            <Link to={`/qr/${bill.id}`} style={actionBtn}>QR</Link>
                           )}
-                          <Link to={`/qr/${bill.id}`} style={actionBtn}>QR</Link>
                           <Link to={`/bill/${bill.id}`} style={actionBtn}>View</Link>
                         </div>
                       </td>

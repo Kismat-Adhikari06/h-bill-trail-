@@ -13,10 +13,6 @@ function EditBillPage() {
   useEffect(() => {
     fetchBillById(id)
       .then((bill) => {
-        if (bill.status !== "open") {
-          setError(`This bill is "${bill.status}" and cannot be edited.`);
-          return;
-        }
         setForm({
           table_number: bill.table_number,
           customer_name: bill.customer_name,
@@ -159,7 +155,9 @@ function EditBillPage() {
         <div style={{ marginTop: "20px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
             <h3 style={{ margin: 0 }}>Bill Items</h3>
-            <button type="button" onClick={addItem} style={addBtn}>+ Add Item</button>
+            {form.status === "open" && (
+              <button type="button" onClick={addItem} style={addBtn}>+ Add Item</button>
+            )}
           </div>
 
           <div className="item-header" style={itemHeader}>
@@ -178,7 +176,8 @@ function EditBillPage() {
                 value={item.item_name}
                 onChange={(e) => handleItemChange(index, "item_name", e.target.value)}
                 required
-                style={{ ...input, flex: 2 }}
+                readOnly={form.status !== "open"}
+                style={{ ...input, flex: 2, ...(form.status !== "open" ? { background: "#f5f5f5", cursor: "default" } : {}) }}
               />
               <input
                 type="number"
@@ -187,7 +186,8 @@ function EditBillPage() {
                 onChange={(e) => handleItemChange(index, "quantity", e.target.value)}
                 min="1"
                 required
-                style={{ ...input, flex: 1 }}
+                readOnly={form.status !== "open"}
+                style={{ ...input, flex: 1, ...(form.status !== "open" ? { background: "#f5f5f5", cursor: "default" } : {}) }}
               />
               <input
                 type="number"
@@ -197,12 +197,15 @@ function EditBillPage() {
                 min="0"
                 step="0.01"
                 required
-                style={{ ...input, flex: 1 }}
+                readOnly={form.status !== "open"}
+                style={{ ...input, flex: 1, ...(form.status !== "open" ? { background: "#f5f5f5", cursor: "default" } : {}) }}
               />
               <span style={itemTotal}>
                 Rs {((parseFloat(item.quantity) || 0) * (parseFloat(item.unit_price) || 0)).toFixed(2)}
               </span>
-              <button type="button" onClick={() => removeItem(index)} style={removeBtn}>x</button>
+              {form.status === "open" && (
+                <button type="button" onClick={() => removeItem(index)} style={removeBtn}>x</button>
+              )}
             </div>
           ))}
         </div>

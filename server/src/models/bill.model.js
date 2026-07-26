@@ -123,10 +123,6 @@ async function update(id, billData) {
   const existing = await db.collection(COLLECTION).findOne({ _id: objectId });
   if (!existing) return null;
 
-  if (existing.status !== "open") {
-    return { locked: true, status: existing.status };
-  }
-
   const items = billData.items.map((item) => ({
     item_name: item.item_name,
     quantity: item.quantity,
