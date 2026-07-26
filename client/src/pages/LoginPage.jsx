@@ -46,7 +46,7 @@ function LoginPage() {
 
   return (
     <div style={container}>
-      <div style={card}>
+      <div className="login-card" style={card}>
         <h1 style={{ textAlign: "center", marginBottom: "8px" }}>H-Bill</h1>
         <p style={{ textAlign: "center", color: "#888", marginBottom: "24px" }}>
           {isSignup ? "Create your account" : "Sign in to your account"}
