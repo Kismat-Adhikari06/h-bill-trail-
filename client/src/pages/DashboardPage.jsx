@@ -9,7 +9,7 @@ function DashboardPage() {
   const [error, setError] = useState(null);
   const [expandedBill, setExpandedBill] = useState(null);
   const [dateFilter, setDateFilter] = useState("today");
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,11 +18,6 @@ function DashboardPage() {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
-
-  function handleLogout() {
-    logout();
-    navigate("/login");
-  }
 
   function toggleExpand(billId) {
     setExpandedBill(expandedBill === billId ? null : billId);
@@ -82,7 +77,6 @@ function DashboardPage() {
         </div>
         <div className="dash-header-actions">
           <button onClick={() => navigate("/bill/new")} style={createBtn}>+ New Bill</button>
-          <button onClick={handleLogout} style={logoutBtn}>Logout</button>
         </div>
       </div>
 
@@ -231,17 +225,6 @@ const createBtn = {
   fontSize: "14px",
   cursor: "pointer",
   fontWeight: "600",
-};
-
-const logoutBtn = {
-  padding: "10px 20px",
-  background: "#fff",
-  color: "#666",
-  border: "1px solid #e0e0e0",
-  borderRadius: "10px",
-  fontSize: "14px",
-  cursor: "pointer",
-  fontWeight: "500",
 };
 
 const statCard = {
