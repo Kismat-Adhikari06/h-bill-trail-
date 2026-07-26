@@ -33,7 +33,13 @@ a:hover {
 .app-main {
   flex: 1;
   min-width: 0;
+  margin-left: 220px;
   position: relative;
+  transition: margin-left 0.25s ease-in-out;
+}
+
+.app-main-collapsed {
+  margin-left: 66px;
 }
 
 /* Sidebar */
@@ -49,7 +55,12 @@ a:hover {
   left: 0;
   bottom: 0;
   z-index: 100;
-  transition: transform 0.2s ease;
+  transition: width 0.25s ease-in-out, transform 0.25s ease-in-out;
+  overflow: hidden;
+}
+
+.sidebar-collapsed {
+  width: 66px;
 }
 
 .sidebar-overlay {
@@ -57,15 +68,49 @@ a:hover {
 }
 
 .sidebar-top {
-  padding: 24px 0;
+  padding: 20px 0;
 }
 
 .sidebar-brand {
-  font-size: 20px;
-  font-weight: 800;
-  padding: 0 20px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px 20px;
   border-bottom: 1px solid rgba(255,255,255,0.08);
   margin-bottom: 12px;
+}
+
+.sidebar-brand-text {
+  font-size: 20px;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.sidebar-collapsed .sidebar-brand-text {
+  opacity: 0;
+  width: 0;
+}
+
+.sidebar-collapse-btn {
+  background: rgba(255,255,255,0.08);
+  border: none;
+  color: rgba(255,255,255,0.6);
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+
+.sidebar-collapse-btn:hover {
+  background: rgba(255,255,255,0.14);
+  color: #fff;
 }
 
 .sidebar-nav {
@@ -85,6 +130,13 @@ a:hover {
   font-size: 14px;
   font-weight: 500;
   transition: all 0.15s;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.sidebar-collapsed .sidebar-link {
+  justify-content: center;
+  padding: 10px;
 }
 
 .sidebar-link:hover {
@@ -99,11 +151,18 @@ a:hover {
   font-weight: 600;
 }
 
-.sidebar-icon {
-  font-size: 16px;
-  width: 20px;
-  text-align: center;
+.sidebar-link-icon {
   flex-shrink: 0;
+}
+
+.sidebar-link-label {
+  transition: opacity 0.2s ease-in-out;
+  overflow: hidden;
+}
+
+.sidebar-collapsed .sidebar-link-label {
+  opacity: 0;
+  width: 0;
 }
 
 .sidebar-bottom {
@@ -116,6 +175,11 @@ a:hover {
   align-items: center;
   gap: 10px;
   margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.sidebar-collapsed .sidebar-user {
+  justify-content: center;
 }
 
 .sidebar-avatar {
@@ -133,6 +197,16 @@ a:hover {
 
 .sidebar-user-info {
   min-width: 0;
+  overflow: hidden;
+}
+
+.sidebar-collapsed .sidebar-user-info {
+  opacity: 0;
+  width: 0;
+}
+
+.sidebar-user-info {
+  transition: opacity 0.2s ease-in-out;
 }
 
 .sidebar-user-name {
@@ -160,6 +234,21 @@ a:hover {
   cursor: pointer;
   font-weight: 500;
   transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.sidebar-collapsed .sidebar-logout {
+  justify-content: center;
+  padding: 8px;
+}
+
+.sidebar-collapsed .sidebar-logout .sidebar-link-label {
+  opacity: 0;
+  width: 0;
 }
 
 .sidebar-logout:hover {
@@ -176,13 +265,56 @@ a:hover {
   padding: 24px 28px;
 }
 
-@media (max-width: 900px) {
+/* Tablet - sidebar auto-collapses */
+@media (max-width: 1024px) {
+  .app-main {
+    margin-left: 66px;
+  }
+
+  .app-main-collapsed {
+    margin-left: 66px;
+  }
+}
+
+/* Tablet & below - sidebar becomes overlay drawer */
+@media (max-width: 768px) {
+  .app-main {
+    margin-left: 0;
+  }
+
+  .app-main-collapsed {
+    margin-left: 0;
+  }
+
   .sidebar {
     transform: translateX(-100%);
+    width: 220px;
+  }
+
+  .sidebar.sidebar-collapsed {
+    width: 220px;
   }
 
   .sidebar-open {
     transform: translateX(0);
+  }
+
+  .sidebar-collapsed .sidebar-link-label,
+  .sidebar-collapsed .sidebar-logout .sidebar-link-label,
+  .sidebar-collapsed .sidebar-user-info,
+  .sidebar-collapsed .sidebar-brand-text {
+    opacity: 1;
+    width: auto;
+  }
+
+  .sidebar-collapsed .sidebar-link,
+  .sidebar-collapsed .sidebar-logout {
+    justify-content: flex-start;
+    padding: 10px 12px;
+  }
+
+  .sidebar-collapsed .sidebar-user {
+    justify-content: flex-start;
   }
 
   .sidebar-overlay {
@@ -202,7 +334,7 @@ a:hover {
     padding: 12px 16px;
     background: #fff;
     border: none;
-    borderBottom: 1px solid #eee;
+    border-bottom: 1px solid #eee;
     font-size: 20px;
     cursor: pointer;
     text-align: left;

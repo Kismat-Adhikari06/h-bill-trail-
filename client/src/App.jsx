@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Sidebar from "./components/Sidebar";
 import LoginPage from "./pages/LoginPage";
@@ -21,7 +21,7 @@ function ProtectedRoute({ children, role }) {
   return children;
 }
 
-function AppRoutes({ onMenuClick }) {
+function AppRoutes() {
   const { user } = useAuth();
 
   return (
@@ -31,7 +31,7 @@ function AppRoutes({ onMenuClick }) {
         path="/"
         element={
           <ProtectedRoute role="admin">
-            <DashboardPage onMenuClick={onMenuClick} />
+            <DashboardPage />
           </ProtectedRoute>
         }
       />
@@ -73,30 +73,53 @@ function AppRoutes({ onMenuClick }) {
   );
 }
 
-function App() {
+function Layout() {
   const { user } = useAuth();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof window !== "undefined" && window.innerWidth <= 1024) return true;
+    return localStorage.getItem("sidebar-collapsed") === "true";
+  });
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-  const showSidebar = user && user.role;
+  useEffect(() => {
+    localStorage.setItem("sidebar-collapsed", collapsed);
+  }, [collapsed]);
 
+  function handleToggleCollapse() {
+    setCollapsed((prev) => !prev);
+  }
+
+  const showSidebar = user && user.role === "admin";
+
+  return (
+    <div className="app-layout">
+      {showSidebar && (
+        <Sidebar
+          open={mobileOpen}
+          onClose={() => setMobileOpen(false)}
+          collapsed={collapsed}
+          onToggleCollapse={handleToggleCollapse}
+        />
+      )}
+      <div className={`app-main ${showSidebar && collapsed ? "app-main-collapsed" : ""}`}>
+        {showSidebar && (
+          <button className="hamburger" onClick={() => setMobileOpen(true)}>
+            &#9776;
+          </button>
+        )}
+        <div className="app-container">
+          <AppRoutes />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <div className="app-layout">
-          {showSidebar && (
-            <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-          )}
-          <div className="app-main">
-            {showSidebar && (
-              <button className="hamburger" onClick={() => setSidebarOpen(true)}>
-                &#9776;
-              </button>
-            )}
-            <div className="app-container">
-              <AppRoutes onMenuClick={() => setSidebarOpen(true)} />
-            </div>
-          </div>
-        </div>
+        <Layout />
       </AuthProvider>
     </BrowserRouter>
   );

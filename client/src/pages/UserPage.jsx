@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { getSavedBills, saveBill } from "../api/savedBills";
 
 function UserPage() {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const saveBillId = searchParams.get("save");
   const [bills, setBills] = useState([]);
@@ -44,11 +43,6 @@ function UserPage() {
     }
   }, [user, saveBillId]);
 
-  function handleLogout() {
-    logout();
-    navigate("/login");
-  }
-
   function handleCardClick() {
     setJustSaved(false);
   }
@@ -63,7 +57,6 @@ function UserPage() {
               Welcome, {user?.name}
             </p>
           </div>
-          <button onClick={handleLogout} style={logoutBtn}>Logout</button>
         </div>
 
         {justSaved && (
@@ -156,16 +149,6 @@ const header = {
   justifyContent: "space-between",
   alignItems: "center",
   marginBottom: "24px",
-};
-
-const logoutBtn = {
-  padding: "8px 16px",
-  background: "#fff",
-  color: "#333",
-  border: "1px solid #ddd",
-  borderRadius: "6px",
-  fontSize: "14px",
-  cursor: "pointer",
 };
 
 const savedBanner = {
