@@ -75,10 +75,6 @@ function BillPage() {
           <span>Subtotal</span>
           <span>Rs {bill.subtotal}</span>
         </div>
-        <div style={rowStyle}>
-          <span>VAT ({bill.vat_rate}%)</span>
-          <span>Rs {bill.vat_amount}</span>
-        </div>
         <div style={{ ...rowStyle, ...totalRowStyle }}>
           <span>Total</span>
           <span>Rs {bill.total_amount}</span>
